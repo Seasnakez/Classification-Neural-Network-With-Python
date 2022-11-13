@@ -38,6 +38,29 @@ class Sigmoid_Logistic:
 
 
 class Neural_Network:
+    """Neural Network is a neural network able to perform classification problems. 
+    To use, being by initalizing the class and loading the data:
+
+    ANN = Neural_Network()
+    ANN.load.data(training_data, training_labels, validation_data, validation_labels, test_data, test_labels)
+
+    Followed by setting all the hyper parameters. We will use MNIST as an example below:
+    (for more info on input parameters, see docstrings for each method)
+
+    ANN.set_classes(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
+    ANN.set_hidden_layers([30])  # list of hidden layers sizes, here its one layer with 30 neurons
+    ANN.set_batch_size(1)  # amount of examples per mini-batch
+    ANN.set_learning_rate(0.1, "fixed")  # learning rate, and which learning algorithm to use
+    ANN.set_regularization(1)  # lambda value for L2 regularization (0 to turn it off)
+    ANN.set_no_improvement_offset(10)  # If the network doesnt improve in 10 epochs, it terminates
+    ANN.set_cost(nn.ann.Cross_Entropy_Cost)  # the cost, or loss function
+    ANN.set_cost(nn.ann.Sigmoid_Logistic)  # the logistic function to be used
+    
+    With all hyper parameters set, one can begin training the network. Here the frequency
+    of applying the testing and validation set on the network has been set to 10000
+
+    ANN.start_training(print_offset=10_000, plot_output=True)
+    """
     def __init__(self) -> None:
         # Layer variables
         self.hidden_layer_sizes: list[int]
@@ -95,6 +118,12 @@ class Neural_Network:
     # =============================== Network Methods ===================================
 
     def _feedforward(self, input_layer: np.ndarray) -> None:
+        """Updates the activations depending on the input weights and biases. Vectorized to improve calculation speed.
+
+        Args:
+            input_layer (np.ndarray): The input data if a single example in form of a (n, 1) array, where n is the amount
+            of attributes
+        """
         # Calculates activation values and saves them for quick access during backpropagation
         self.a[0] = input_layer
         for l in range(1, len(self.hidden_layer_sizes)+2):  # skips input layer
@@ -104,15 +133,23 @@ class Neural_Network:
             self.a[l] = self.logistic(self.z[l])
 
     def _calculate_error(self, label) -> None:
-        # calculates error at output layer
+        """Calculates dC/dz of the output layer, and then backpropagates the error through
+        the network. 
+
+        Args:
+            label : The real output corresponding to the example, as a single value
+        """
+        
         y = self._desired_output(label)
-        self.error[-1] = self.delta(y, self.z[-1], self.a[-1])
-        # Backpropagation
+        self.error[-1] = self.delta(y, self.z[-1], self.a[-1])  # calculates error at output layer
+        # layer is reversed to be consistent with notation
         for l in reversed(range(len(self.hidden_layer_sizes)+1)):  # skips input and output layer
-            # print(f"w.T:{self.w[l+1].T.shape}, error:{self.error[l+1].shape}")
             self.error[l] = np.dot(self.w[l+1].T, self.error[l+1]) * self.d_logistic(self.z[l])
 
     def _update_delta(self) -> None:
+        """Applies the error calculated by self._calculate_error to the biases and weights. Includes
+        L2 regularization.
+        """
         for l in range(1, len(self.hidden_layer_sizes)+2):  # skips input layer
             for j in range(len(self.error[l])):  # iterates over neuron index of current layer (just like notation)
                 # self.a[l-1] is a 2 dimensional array, (8, 1) for example, but error and w are 1-d arrays, (8,), 
@@ -124,18 +161,39 @@ class Neural_Network:
             self.b[l] = self.b[l] - (self.learning_rate * self.error[l]) / self.batch_size  # type: ignore
 
     def _gradient_descent(self, batch, labels) -> None:
+        """Performs gradient descent on the network. Note that having higher batch sizes will increase
+        speed of calculation.
+
+        Args:
+            batch: Array of examples to be iterated over before applying error. If only one is provided it acts like stochastic gradient descent
+            labels: Array of the real values to each example
+        """
         for input_layer, label in zip(batch, labels):  # type: ignore
             self._feedforward(input_layer)
             self._calculate_error(label)
         self._update_delta()
     
     def _desired_output(self, label):
+        """Takes in a label and converts it into a vector, with the correct class set to 1,
+        and the rest set 0.
+
+        Args:
+            label : The real output corresponding to the example, as a single value
+
+        Returns:
+            _type_: vectorized version of the output, in form of One-Hot Encoding
+        """
         correct_index: int = self.class_dict[label]
         y = np.zeros([self.output_layer_size, 1])
         y[correct_index] = 1
         return y
 
     def _create_arrays(self) -> None:
+        """Initializes vectors to hold all the variables needed during feedforward and backpropagation. 
+        Activations, z and error are init as 0, as they get overwritten during feedforward and backpropagation.
+        Bias is init as 0 for simplicity, and weights are init with a Gaussian Normal of mean 0 and standard
+        deviation of 1.
+        """
         # Updated weight initializations from random into gaussian normal with mean 0 and standard deviation of 1/sqrt(n)
         # where n is weights connected to a neuron
 
@@ -158,6 +216,23 @@ class Neural_Network:
     # =============================== Learning ===================================
     
     def start_training(self, print_offset: int, plot_output=False, log_offset=-1) -> None:
+        """Creates the arrays to hold all the values, then begins training through gradient descent. The learning
+        will stop if enough epochs have passed without the network improving, decided by self._no_improvement.
+        At each print_offset amount of examples, the network will be evaluated against the validation and testing set, 
+        and the result printed in the terminal. Additionally, if logging is on, it will also evaluate the network each
+        log_offset amount of examples, but not print them out. The result will be plotted on a graph when the network terminates
+        if plot_output is set to True.
+
+        Note that when either log_offset and print_offset will run, the network is tested on the validation and
+        testing set, which can be computationally expensive if it is set too low. For maximum learning speed, turn both off.
+        Note however, that after each epoch the network will be tested either way, as it is required for self._no_improvement.
+
+        Args:
+            print_offset (int): How many examples have to run before testing the network on the validation and testing sets
+                                and output the result
+            plot_output (bool, optional): If the perfomance of the network should be plotted. Defaults to False.
+            log_offset (int, optional): How often the network performance should be saved, used in plotting If -1, no additional logs will be taken. Defaults to -1.
+        """
         # self._save_values will run on both offsets, so to avoid duplicated inputs log offset is omitted
         if print_offset == log_offset:
             log_offset = -1
@@ -187,7 +262,18 @@ class Neural_Network:
             print("Plotting...")
             self.show_plot()
 
-    def _no_improvement(self, epochs: int):
+    def _no_improvement(self, epochs: int) -> bool:
+        """Stops the network if no improvement has been made in a certain amount of epochs, specified by the epoch parameter.
+        If learning rate has been set to variable, then instead of terminating the learning rate will be halved. Once the learning
+        rate is below self.learning_rate_factor, set when creating the network, the network will terminate. 
+
+        Args:
+            epochs (int): Amount of epochs that have passed
+
+        Returns:
+            bool: True if the network should terminate, False if not
+        """
+
         # checks last [offset] amount of epochs to see if average improvement is above zero, if it is not, return True
         if epochs < self.no_improvement_offset:  # not enough epochs have passed to see if no improvement has been made
             return False
@@ -205,6 +291,7 @@ class Neural_Network:
         return False
 
     def print_training_info(self, batch_i: int, epoch_i: int, offset:int, plot_output: bool) -> None:
+        """Evalutes the network on the validation and testing set, and prints the results"""
         if batch_i == 0:
             print(f"{'Validation':10} | {'Pass Rate':15} | {'Percent':8} | {'Examples':12} | {'Batch':12} | {'Epoch':6} || {'Testing':6} | {'Pass Rate':15} | {'Percent':8}")
         if ((batch_i+1) * self.batch_size) % (offset) == 0:
@@ -220,6 +307,7 @@ class Neural_Network:
     # =============================== Logging ===================================
     
     def _save_values(self, batch_i: int):
+        """Evalutes the network on the validation and testing set and saves them to memory, used for plotting"""
         val_pass_rate = self._try_validation() / len(self.validation_labels)
         val_cost = self.cost(self.validation_labels[-1], self.z[-1], self.a[-1])
         self.val_cost_list.append(val_cost)
@@ -238,6 +326,7 @@ class Neural_Network:
     # =============================== Plotting ===================================
    
     def show_plot(self) -> None:
+        """Plots the pass rate over time and cost over time for both the validation and testing set"""
         fig, (ax1, ax2) = plt.subplots(2, 1)
         ax1.plot(self.examples_list, self.val_pass_rate_list, label="Validation")
         ax1.plot(self.examples_list, self.test_pass_rate_list, label="Testing")
@@ -267,6 +356,7 @@ class Neural_Network:
         return self._try_set(self.testing_set, self.testing_labels)
 
     def _try_set(self, data_set, labels) -> int:
+        """Evalutes the network on a specific data set, returns the amount of correct answers"""
         # TODO add cost averaging and return, add flag if we wanna do it
         # feedforward the validation set
         amount_correct: int = 0
@@ -277,8 +367,8 @@ class Neural_Network:
         return amount_correct
 
     def _correct_answer(self, label) -> bool:
-        # Checks if output was the correct answer, where output is determined by the highest activation neuron
-        # if multiple neurons are tied as highest, the lowest index is seen as output
+        """Checks the output layer of the network, whichever neuron has the highest activation is
+        chosen as the class that is the networks output. At ties, the lowest index is chosen for simplicity."""
         correct_index = self.class_dict[label]
         output_index = self.a[-1].argmax()
         if(correct_index == output_index):
@@ -341,5 +431,6 @@ class Neural_Network:
         self.testing_set = test_inputs
         self.testing_labels = test_labels
 
+        # All input layers sizes have to be same, so the size of any example is the size of the input layer
         self.input_layer_size = len(training_inputs[0])
         

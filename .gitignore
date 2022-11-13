@@ -3,3 +3,4 @@ __pycache__
 .vscode
 testing.py
 data_sets/
+legacy/
