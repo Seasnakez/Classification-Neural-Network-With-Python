@@ -16,7 +16,7 @@ import gzip
 # Third-party libraries
 import numpy as np
 
-def load_data():
+def load_data(path):
     """Return the MNIST data as a tuple containing the training data,
     the validation data, and the test data.
     The ``training_data`` is returned as a tuple with two entries.
@@ -35,43 +35,15 @@ def load_data():
     That's done in the wrapper function ``load_data_wrapper()``, see
     below.
     """
-    f = gzip.open('C:/Users/adde4/Documents/.MDU/DVA493 Lärande System/DeepLearningBookRepo/DeepLearningPython/mnist.pkl.gz', 'rb')
+    f = gzip.open(path, 'rb')
     training_data, validation_data, test_data = pickle.load(f, encoding="latin1")
     f.close()
     return (training_data, validation_data, test_data)
 
-def load_data_wrapper():
-    """Return a tuple containing ``(training_data, validation_data,
-    test_data)``. Based on ``load_data``, but the format is more
-    convenient for use in our implementation of neural networks.
-    In particular, ``training_data`` is a list containing 50,000
-    2-tuples ``(x, y)``.  ``x`` is a 784-dimensional numpy.ndarray
-    containing the input image.  ``y`` is a 10-dimensional
-    numpy.ndarray representing the unit vector corresponding to the
-    correct digit for ``x``.
-    ``validation_data`` and ``test_data`` are lists containing 10,000
-    2-tuples ``(x, y)``.  In each case, ``x`` is a 784-dimensional
-    numpy.ndarry containing the input image, and ``y`` is the
-    corresponding classification, i.e., the digit values (integers)
-    corresponding to ``x``.
-    Obviously, this means we're using slightly different formats for
-    the training data and the validation / test data.  These formats
-    turn out to be the most convenient for use in our neural network
-    code."""
-    tr_d, va_d, te_d = load_data()
-    training_inputs = [np.reshape(x, (784, 1)) for x in tr_d[0]]
-    training_results = [vectorized_result(y) for y in tr_d[1]]
-    training_data = zip(training_inputs, training_results)
-    validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
-    validation_data = zip(validation_inputs, va_d[1])
-    test_inputs = [np.reshape(x, (784, 1)) for x in te_d[0]]
-    test_data = zip(test_inputs, te_d[1])
-    return (training_data, validation_data, test_data)
 
+def load_data_wrapper(path):
 
-def load_data_wrapper_ALTERNATE():
-
-    tr_d, va_d, te_d = load_data()
+    tr_d, va_d, te_d = load_data(path)
     training_inputs = [np.reshape(x, (784, 1)) for x in tr_d[0]]
     training_labels = np.array(tr_d[1])
     validation_inputs = [np.reshape(x, (784, 1)) for x in va_d[0]]
@@ -80,41 +52,6 @@ def load_data_wrapper_ALTERNATE():
     test_labels = np.array(te_d[1])
     return training_inputs, training_labels, validation_inputs, validation_labels, test_inputs, test_labels
 
-
-def load_data_wrapper_UPDATED():
-    print("converting :D")
-    # test data is zip(input_layer, label)
-    # training data is zip(input_layer, desired_vector), desired vector can be otten from vectorized_result(label)
-    # print(list(test_data)[0][1])
-    print("loading data")
-    mnist_training = np.loadtxt("C:/Users/adde4/Documents/.MDU/DVA493 Lärande System/Code_DVA493/mnist_full/mnist_train.csv", dtype="int", delimiter=",", skiprows=1)
-    mnist_testing = np.loadtxt("C:/Users/adde4/Documents/.MDU/DVA493 Lärande System/Code_DVA493/mnist_full/mnist_test.csv", dtype="int", delimiter=",", skiprows=1)
-    print("data loaded")
-
-    print("converting data")
-    # Training
-    a_training_labels = mnist_training[:, 0]
-    a_training_data = np.delete(mnist_training, 0, 1)
-    train_reshaped_data = []
-    for example in a_training_data:
-        train_reshaped_data.append(example.reshape(784, 1))
-    vector_labels = []
-    for label in a_training_labels:
-        vector_labels.append(vectorized_result(label))
-    training_data = zip(train_reshaped_data, vector_labels)
-
-    # Testing
-    a_testing_labels = mnist_testing[:, 0]
-    a_testing_data = np.delete(mnist_testing, 0, 1)
-    test_reshaped_data = []
-    for example in a_testing_data:
-        test_reshaped_data.append(example.reshape(784, 1))
-    test_data = zip(test_reshaped_data, a_testing_labels)
-
-    validation_data = None
-    print("data converted")
-
-    return (training_data, validation_data, test_data)
 
 def vectorized_result(j):
     """Return a 10-dimensional unit vector with a 1.0 in the jth
