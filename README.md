@@ -23,3 +23,12 @@ To use, being by initalizing the class and loading the data:
     # of applying the testing and validation set on the network has been set to 10000
 
     ANN.start_training(print_offset=10_000, plot_output=True)
+# TODO
+## High Priority
+- Change mini-batch into full-matrix matrix based approach for much faster computation
+## Maybe will happen
+- Saving and Loading models
+## Extra Options that have a very low chance of the ever happening
+- Logistic functions per layer
+- Adding more learning rate algorithms
+- Adding more logistic and cost functions
