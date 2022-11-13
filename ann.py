@@ -155,9 +155,8 @@ class Neural_Network:
         self.w = [np.array([0, 0])] + [np.random.normal(0, 1/np.sqrt(prev_neurons), size=[neurons, prev_neurons]) for neurons, prev_neurons in zip(layers[1:], layers)]  # type: ignore
 
 
-
     # =============================== Learning ===================================
-
+    
     def start_training(self, print_offset: int, plot_output=False, log_offset=-1) -> None:
         # self._save_values will run on both offsets, so to avoid duplicated inputs log offset is omitted
         if print_offset == log_offset:
@@ -217,7 +216,9 @@ class Neural_Network:
             val_str = f"{'Validation':10} | {f'{validation_correct:,} / {len(self.validation_labels):,}':15} | {f'{val_pass_rate:.2%}':8} | {f'{((batch_i+1) * self.batch_size):,}':12} | {f'{(batch_i+1):,}':12} | {f'{(epoch_i+1):,}':6}"
             print(val_str + f" || {'Testing':6} | {f'{test_correct:,} / {len(self.testing_labels):,}':15} | {f'{test_pass_rate:.2%}':8}")
 
+
     # =============================== Logging ===================================
+    
     def _save_values(self, batch_i: int):
         val_pass_rate = self._try_validation() / len(self.validation_labels)
         val_cost = self.cost(self.validation_labels[-1], self.z[-1], self.a[-1])
@@ -233,7 +234,9 @@ class Neural_Network:
 
         return test_pass_rate, val_pass_rate, test_cost, val_cost
 
+
     # =============================== Plotting ===================================
+   
     def show_plot(self) -> None:
         fig, (ax1, ax2) = plt.subplots(2, 1)
         ax1.plot(self.examples_list, self.val_pass_rate_list, label="Validation")
@@ -254,7 +257,9 @@ class Neural_Network:
         plt.tight_layout()
         plt.show()
 
+
     # =============================== Try Data Sets ===================================
+    
     def _try_validation(self) -> int:
         return self._try_set(self.validation_set, self.validation_labels)
 
@@ -280,7 +285,9 @@ class Neural_Network:
             return True
         return False
 
+
     # =============================== Setters ===================================
+    
     def set_hidden_layers(self, *args: list[int]) -> None:
         self.hidden_layer_sizes = args[0]
 
@@ -321,7 +328,9 @@ class Neural_Network:
     def set_no_improvement_offset(self, offset: int):
         self.no_improvement_offset = offset
 
+
     # =============================== Data Loading ===================================
+    
     def load_data(self, training_inputs, training_labels, validation_inputs, validation_labels, test_inputs, test_labels):
         self.training_set = training_inputs
         self.training_labels = training_labels
