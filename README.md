@@ -2,12 +2,12 @@
 
 A classification Neural Network with customizable hyper-parameters, bundled with data proccesing functions and data loading functions. Includes logging and plotting functionality for comparison of hyper-parameters and evaluating performance of the network.
 
-To use, being by initalizing the class and loading the data:
+To use, begin by initalizing the class and loading the data:
 
     ANN = Neural_Network()
     ANN.load.data(training_data, training_labels, validation_data, validation_labels, test_data, test_labels)
 
-    # Followed by setting all the hyper parameters. We will use MNIST as an example below:
+    # Setting all the hyper parameters. We will use MNIST as an example below:
     # (for more info on input parameters, see docstrings for each method)
 
     ANN.set_classes(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)
