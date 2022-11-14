@@ -35,6 +35,8 @@ To use, begin by initalizing the class and loading the data:
 # TODO
 ## High Priority
 - Change mini-batch into full-matrix matrix based approach for much faster computation
+- BLAS optimize all linear algebra operations
+- Make code Cython compatible for faster computation
 ## Maybe will happen
 - Saving and Loading models
 ## Extra Options that have a very low chance of the ever happening
