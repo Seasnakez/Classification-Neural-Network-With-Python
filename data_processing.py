@@ -1,4 +1,4 @@
-from imports import *
+from ann import np
 
 def normalize_data(self, data):
         min_val = np.min(data)
