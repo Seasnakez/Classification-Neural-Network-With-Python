@@ -4,3 +4,4 @@ __pycache__
 testing.py
 data_sets/
 legacy/
+mnist_loader.py
