@@ -1,5 +1,4 @@
-from imports import *
-import mnist_loader
+from ann import np
 
 def split_data_set(self, input_data: np.ndarray, label_index: int, 
                 training_set_size: float, validation_set_size: float, normalize: bool) \
@@ -11,13 +10,6 @@ def split_data_set(self, input_data: np.ndarray, label_index: int,
 
         # Normalizes data
         if normalize:
-            """
-            data_set = data_set.T
-            for i, column in enumerate(data_set):
-                data_set[i] = self.normalize_data(column)
-            data_set = data_set.T
-            data_set = self.normalize_data(data_set)
-            """
             data_set = self.normalize_data(data_set)
 
         # Splits data into sets

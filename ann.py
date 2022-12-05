@@ -1,7 +1,12 @@
-from imports import *
+from typing import Callable
+from scipy.special import expit
+import numpy as np
+import matplotlib.pyplot as plt
 
 # My own modules
 import mnist_loader
+import data_processing
+import data_loader
 
 
 class Quadratic_Cost:
@@ -215,7 +220,7 @@ class Neural_Network:
 
     # =============================== Learning ===================================
     
-    def start_training(self, print_offset: int, plot_output=False, log_offset=-1) -> None:
+    def start_training(self, print_offset: int = 100, plot_output=False, log_offset=-1) -> None:
         """Creates the arrays to hold all the values, then begins training through gradient descent. The learning
         will stop if enough epochs have passed without the network improving, decided by self._no_improvement.
         At each print_offset amount of examples, the network will be evaluated against the validation and testing set, 
@@ -231,7 +236,7 @@ class Neural_Network:
             print_offset (int): How many examples have to run before testing the network on the validation and testing sets
                                 and output the result
             plot_output (bool, optional): If the perfomance of the network should be plotted. Defaults to False.
-            log_offset (int, optional): How often the network performance should be saved, used in plotting If -1, no additional logs will be taken. Defaults to -1.
+            log_offset (int, optional): How often the network performance should be saved, used in plotting. If -1, no additional logs will be taken. Defaults to -1.
         """
         # self._save_values will run on both offsets, so to avoid duplicated inputs log offset is omitted
         if print_offset == log_offset:
