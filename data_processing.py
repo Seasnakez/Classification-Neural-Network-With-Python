@@ -1,6 +1,6 @@
 from ann import np
 
-def normalize_data(self, data):
+def normalize_data(data):
         min_val = np.min(data)
         max_val = np.max(data)
         if min_val == 0:
