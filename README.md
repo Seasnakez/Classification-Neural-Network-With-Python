@@ -40,6 +40,6 @@ Then configure hyper-parameters.
 
 The last line is ```start_training()``` which will begin training.
 
-While its running you will get regular updates of the network is performing,
+While its running you will get regular updates of how the network is performing,
 
 ![image](https://user-images.githubusercontent.com/99198862/205627402-cb6896c1-7d4d-4031-96a8-63078d405254.png)
