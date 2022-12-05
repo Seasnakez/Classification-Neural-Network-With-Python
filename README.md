@@ -1,34 +1,45 @@
-# Classification-Neural-Network
+![Classification_Neural_Network](https://user-images.githubusercontent.com/99198862/205621099-e169a879-023b-44a7-8bd9-8f7e0c8a313e.png)
+## Table of contents
+* [General info](#general-info)
+* [Technologies](#technologies)
+* [Setup](#setup)
+* [Usage](#usage)
 
-A classification Neural Network with customizable hyper-parameters, bundled with data proccesing functions and data loading functions. Includes logging and plotting functionality for comparison of hyper-parameters and evaluating performance of the network.
+## General info
+A Neural Network for classifying data sets, contains several advanced optimization parameters. Includes plotting and logging functionality.
+	
+## Technologies
+Project is created with:
+* Python 3.10.2
+* Numpy 1.23.4
+* SciPy 1.9.3
+* Matplotlib 3.6.2
+	
+## Setup
+To run this project, first install the dependencies from requirements.txt by running the following command in the terminal
 
-To use, begin by initalizing the class and loading the data:
-    import neural_network as nn
-    
-    ANN = nn.Neural_Network()
-    
-    # Load the data into the network
-    # You can split up your data into sets and labels. TXT and CSV formats are allowed.
-    nn.data_loader.split_data_set(input_data=data, label_index=0, training_set_size=0.75, validation_set_size=0.1)
-    # Loads data into the model
-    ANN.load.data(training_data, training_labels, validation_data, validation_labels, test_data, test_labels)
-    
+![image](https://user-images.githubusercontent.com/99198862/205624199-58676487-2940-4169-a944-1afe3f0c2a04.png)
 
-    # Setting up all the hyper parameters. We will use MNIST as an example below:
-    # (for more info on input parameters, see docstrings for each method)
 
-    ANN.set_classes(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)  # Each input parameter is a label, for MNIST it's numbers 0 to 9
-    ANN.set_hidden_layers([30])  # list of hidden layers sizes, here its one layer with 30 neurons. Input and output layers are automatically 
-                                 # calculated from data and classes
-    ANN.set_batch_size(1)  # amount of examples per mini-batch
-    ANN.set_learning_rate(0.1, "fixed")  # learning rate, and which learning algorithm to use, in this case fixed
-    ANN.set_regularization(1)  # lambda value for L2 regularization (0 to turn it off)
-    ANN.set_no_improvement_offset(10)  # If the network doesnt improve in 10 epochs, it terminates
-    ANN.set_cost(nn.ann.Cross_Entropy_Cost)  # the cost, or loss function
-    ANN.set_cost(nn.ann.Sigmoid_Logistic)  # the logistic function to be used
-    
-    # With all hyper parameters set, one can begin training the network. Here the frequency
-    # of applying the testing and validation set on the network has been set to 10'000,
-    # and a plot of performance will be provided at the end of training.
+## Usage
+Create a new file and import ann.py and create a Neural_Network class
 
-    ANN.start_training(print_offset=10_000, plot_output=True)
+![image](https://user-images.githubusercontent.com/99198862/205624081-981237fc-f98a-4bc9-a1de-db794341fd31.png)
+
+Most data sets come with labels and training data in one file, split_data_set() splits them up and also divides the data into training, validation and testing.
+
+![image](https://user-images.githubusercontent.com/99198862/205625990-b496721a-38c5-4b11-a5c9-b5dcb9b6d1a9.png)
+
+Next write down the labels of your data set
+
+![image](https://user-images.githubusercontent.com/99198862/205626776-1c57dcf1-1396-45d5-96af-47e8c42b83ea.png)
+
+Then configure hyper-parameters.
+
+![image](https://user-images.githubusercontent.com/99198862/205626725-de68fcec-ecfd-480c-b3f6-d656d8296f34.png)
+
+The last line is ```start_training()``` which will begin training.
+
+While its running you will get regular updates of the network is performing,
+
+![image](https://user-images.githubusercontent.com/99198862/205627402-cb6896c1-7d4d-4031-96a8-63078d405254.png)
