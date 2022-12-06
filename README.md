@@ -16,7 +16,7 @@ Project is created with:
 * Matplotlib 3.6.2
 	
 ## Setup
-To run this project, first install the dependencies from requirements.txt by running the following command in the terminal
+To run this project, clone the repository and install the dependencies from requirements.txt by running the following command in the terminal
 
 ![image](https://user-images.githubusercontent.com/99198862/205624199-58676487-2940-4169-a944-1afe3f0c2a04.png)
 
